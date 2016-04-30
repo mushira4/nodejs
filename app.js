@@ -4,6 +4,8 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
     expressSession = require('express-session'),
+    methodOverride = require('method-override'),
+    errors = require('./middlewares/errors'),
     app = express(); // The express application
 
 // View engine setup
@@ -12,6 +14,7 @@ app.set('view engine', 'ejs');
 app.use(cookieParser('ntalk'));
 app.use(expressSession());
 app.use(bodyParser.json());
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 
 //__dirname = current app directory path
@@ -23,14 +26,9 @@ load('models')
   .then('routes')
   .into(app);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
+// Handle the error tha happened
+app.use(errors.notFound);
+app.use(errors.serverError);
 
 // development error handler
 // will print stacktrace

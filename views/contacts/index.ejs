@@ -5,6 +5,29 @@
 </header>
 <section>
   <p>Welcome <%- user.name %></p>
+  <form action="contact" method="post">
+    <input type="text" name="contact[name]" placeholder="Name" />
+    <input type="text" name="contact[email]" placeholder="Email" />
+    <button type="submit">Save</button>
+  </form>
+  <table>
+    <thead>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Action</th>
+    </thead>
+    <tbody>
+      <% contacts.forEach(function(contact, index) { %>
+        <tr>
+          <td><%- contact.name %></td>
+          <td><%- contact.email %></td>
+          <td>
+            <a href="/contact/<%- index %>">Details</a>
+          </td>
+        </tr>
+      <% })  %>
+    </tbody>
+  </table>
 </section>
 <% include ../exit %>
 <% include ../footer %>
