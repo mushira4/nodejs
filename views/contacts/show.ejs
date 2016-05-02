@@ -6,8 +6,10 @@
   <form action="/contact/<%- id %>?_method=delete" method="post">
     <p><label>Name: </label><%- contact.name %></p>
     <p><label>Email: </label><%- contact.email %></p>
-    <button type="submit">Delete</button>
-    <a href="/contact/<%- id %>/edit">Edit</a>
+    <div class="btn-group">
+      <button type="submit" class="btn btn-danger">Delete</button>
+      <a href="/contact/<%- id %>/edit" class="btn btn-primary">Edit</a>
+    </div>
   </form>
 </section>
 <% include ../exit %>
