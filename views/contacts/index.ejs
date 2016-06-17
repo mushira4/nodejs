@@ -19,19 +19,24 @@
       <th>Action</th>
     </thead>
     <tbody>
-      <% contacts.forEach(function(contact, index) { %>
+      <% if(contacts){ %>
+      <% contacts.forEach(function(contact) { %>
         <tr>
           <td><%- contact.name %></td>
           <td><%- contact.email %></td>
           <td><span id="notify_<%- contact.email %>">Offline</span></td>
           <td>
             <div class="btn-group">
-              <a href="/contact/<%- index %>" class="btn btn-primary">Details</a>
+              <a href="/contact/<%- contact.id %>" class="btn btn-primary">Details</a>
               <a href="/chat" id="chat_<%- contact.email%>" class="btn btn-primary">Chat</a>
             </div>
+            <form action="/contact/<%- contact.id %>?_method=DELETE" method="post">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
           </td>
         </tr>
       <% })  %>
+      <% } %>
     </tbody>
   </table>
 </section>

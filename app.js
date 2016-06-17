@@ -12,7 +12,10 @@ var express = require('express'),
     server = require('http').Server(app),
     io = require('socket.io')(server),
     cookie = cookieParser(SECRET),
-    store = new expressSession.MemoryStore();
+    store = new expressSession.MemoryStore(),
+    mongoose = require('mongoose');
+
+global.db = mongoose.connect('mongodb://127.0.0.1:27017/ntalk');
 
 // View engine setup
 app.set('views', __dirname + '/views');

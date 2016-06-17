@@ -3,7 +3,7 @@
   <h2>Ntalk - Edit contacts</h2>
 </header>
 <section>
-  <form action="/contact/<%- id %>?_method=put" method="post">
+  <form action="/contact/<%- contact.id %>?_method=put" method="post">
     <p><label>Name:</label>
     <input type="text" name="contact[name]" value="<%- contact.name %>" /></p>
     <p><label>Email:</label>

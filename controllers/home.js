@@ -1,20 +1,29 @@
 module.exports = function(app){
+  var User = app.models.user;
   var homeController = {
     index: function(req, res){
       res.render('home/index'); // The page that should be rendered
     },
     login: function(req, res){
-      var email = req.body.user.email,
-          name = req.body.user.name;
-      
-      if(email && name){
-        var user = req.body.user;
-        user['contacts'] = [];
-        req.session.user = user;
-        res.redirect('/contacts'); // Redirect to another page 
-      }else{
-        res.redirect('/');
-      }
+      var query = {email: req.body.user.email};
+      User.findOne(query)
+          .select('name email')
+          .exec(function(error, user){
+            if(user){
+              req.session.user = user;
+              res.redirect('/contacts');
+            } else {
+              var user = req.body.user;
+              User.create(user, function(){
+                if(error){
+                  res.redirect('/');
+                } else {
+                  req.session.user = user;
+                  res.redirect('/contacts')
+                }
+              });
+            }
+          });
     },
     logout: function(req, res){
       req.session.destroy();
