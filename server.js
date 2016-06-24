@@ -1,5 +1,12 @@
 const KEY = 'ntalk.sid', SECRET = 'ntalk';
 
+const SERVER_ADDRESS = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+const SERVER_PORT = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+
+const MONGODB_ADDRESS = process.env.OPENSHIFT_MONGODB_DB_HOST || '127.0.0.1';
+const MONGODB_PORT = process.env.OPENSHIFT_MONGODB_DB_PORT || '27017';
+const MONGO_DB = 'ntalk';
+	
 // Loadig modules
 var express = require('express'),
     load = require('express-load'),
@@ -15,7 +22,8 @@ var express = require('express'),
     store = new expressSession.MemoryStore(),
     mongoose = require('mongoose');
 
-global.db = mongoose.connect('mongodb://127.0.0.1:27017/ntalk');
+
+global.db = mongoose.connect('mongodb://' + MONGODB_ADDRESS + ':' + MONGODB_PORT + '/' + MONGO_DB);
 
 // View engine setup
 app.set('views', __dirname + '/views');
@@ -56,14 +64,11 @@ load('models')
   .then('routes')
   .into(app);
 
-load('sockets')
-  .into(io);
-
 // Handle the error tha happened
 app.use(errors.notFound);
 app.use(errors.serverError);
 
-server.listen(3000, function(){
+server.listen(SERVER_PORT, SERVER_ADDRESS, function(){
   console.log("Ntalk up and running.");
 });
 

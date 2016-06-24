@@ -1,6 +1,9 @@
+const REDIS_ADDRESS = process.env.OPENSHIFT_REDIS_HOST || '127.0.0.1';
+const REDIS_PORT = process.env.OPENSHIFT_REDIS_PORT || '6379';
+
 module.exports = function(io){
   var crypto = require('crypto'),
-      redis = require('redis').createClient(),
+  	  redis = require('redis').createClient(REDIS_PORT, REDIS_ADDRESS),
       sockets = io.sockets,
       onlines = {};
   
