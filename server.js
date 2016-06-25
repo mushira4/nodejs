@@ -1,6 +1,7 @@
 const KEY = 'ntalk.sid', SECRET = 'ntalk';
 
 const SERVER_ADDRESS = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+const SERVER_EXTERNAL_ADDRESS =  'localhost';
 const SERVER_PORT = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 const MONGODB_ADDRESS = process.env.OPENSHIFT_MONGODB_DB_HOST || '127.0.0.1';
@@ -39,6 +40,12 @@ app.use(expressSession({
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
+app.locals = {
+	application:{
+		host: SERVER_EXTERNAL_ADDRESS,
+		port: SERVER_PORT
+	}
+};
 
 //__dirname = current app directory path
 app.use(express.static(__dirname + '/public'));
@@ -63,6 +70,9 @@ load('models')
   .then('controllers')
   .then('routes')
   .into(app);
+
+load('sockets')
+  .into(io);
 
 // Handle the error tha happened
 app.use(errors.notFound);
