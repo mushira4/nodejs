@@ -1,8 +1,15 @@
 const KEY = 'ntalk.sid', SECRET = 'ntalk';
 
-const SERVER_ADDRESS = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-const SERVER_EXTERNAL_ADDRESS =  'localhost';
+const SERVER_ADDRESS =  process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 const SERVER_PORT = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+
+if( process.env.OPENSHIFT_NODEJS_IP ) {
+	var SERVER_EXTERNAL_ADDRESS =  'ntalk-mushira4.rhcloud.com';
+	var SOCKETIO = SERVER_EXTERNAL_ADDRESS;
+} else {
+	var SERVER_EXTERNAL_ADDRESS =  'localhost';	
+	var SOCKETIO = SERVER_EXTERNAL_ADDRESS + ':' + SERVER_PORT;
+}
 
 const MONGODB_ADDRESS = process.env.OPENSHIFT_MONGODB_DB_HOST || '127.0.0.1';
 const MONGODB_PORT = process.env.OPENSHIFT_MONGODB_DB_PORT || '27017';
@@ -42,8 +49,7 @@ app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.locals = {
 	application:{
-		host: SERVER_EXTERNAL_ADDRESS,
-		port: SERVER_PORT
+		socketio: SOCKEIO
 	}
 };
 
