@@ -1,20 +1,5 @@
-const KEY = 'ntalk.sid', SECRET = 'ntalk';
+var config = require('../config/config.js');
 
-const SERVER_ADDRESS =  process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-const SERVER_PORT = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-
-if( process.env.OPENSHIFT_NODEJS_IP ) {
-	var SERVER_EXTERNAL_ADDRESS =  'ntalk-mushira4.rhcloud.com';
-	var SOCKETIO = SERVER_EXTERNAL_ADDRESS;
-} else {
-	var SERVER_EXTERNAL_ADDRESS =  'localhost';	
-	var SOCKETIO = SERVER_EXTERNAL_ADDRESS + ':' + SERVER_PORT;
-}
-
-const MONGODB_ADDRESS = process.env.OPENSHIFT_MONGODB_DB_HOST || '127.0.0.1';
-const MONGODB_PORT = process.env.OPENSHIFT_MONGODB_DB_PORT || '27017';
-const MONGO_DB = 'ntalk';
-	
 // Loadig modules
 var express = require('express'),
     load = require('express-load'),
@@ -26,20 +11,19 @@ var express = require('express'),
     app = express(), // The express application
     server = require('http').Server(app),
     io = require('socket.io')(server),
-    cookie = cookieParser(SECRET),
+    cookie = cookieParser(config.applicationSecret),
     store = new expressSession.MemoryStore(),
     mongoose = require('mongoose');
 
-
-global.db = mongoose.connect('mongodb://' + MONGODB_ADDRESS + ':' + MONGODB_PORT + '/' + MONGO_DB);
+global.db = mongoose.connect(config.mongoConnectionString);
 
 // View engine setup
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(cookie);
 app.use(expressSession({
-  secret: SECRET,
-  name: KEY,
+  secret: config.applicationSecret,
+  name: config.applicationKey,
   resave: true,
   saveUninitialized: true,
   store: store
@@ -49,7 +33,7 @@ app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.locals = {
 	application:{
-		socketio: SOCKEIO
+		socketio: config.socketio
 	}
 };
 
@@ -60,7 +44,7 @@ app.use('/bootstrap/css', express.static(__dirname + '/node_modules/bootstrap/di
 io.use(function(socket, next){
   var data = socket.request;
   cookie(data, {}, function(err){
-    var sessionID = data.signedCookies[KEY];
+    var sessionID = data.signedCookies[config.applicationKey];
     store.get(sessionID, function(err, session){
       if(err || !session){
         return next(new Error('Access Denied'));
@@ -84,7 +68,7 @@ load('sockets')
 app.use(errors.notFound);
 app.use(errors.serverError);
 
-server.listen(SERVER_PORT, SERVER_ADDRESS, function(){
+server.listen(config.serverPort, config.serverAddress, function(){
   console.log("Ntalk up and running.");
 });
 
