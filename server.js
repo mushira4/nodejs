@@ -13,7 +13,9 @@ var express = require('express'),
     io = require('socket.io')(server),
     cookie = cookieParser(config.applicationSecret),
     store = new expressSession.MemoryStore(),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    expressWinston = require('express-winston'),
+    winston = require('winston');
 
 global.db = mongoose.connect(config.mongoConnectionString);
 
@@ -31,6 +33,32 @@ app.use(expressSession({
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
+
+//Shall not log everything unless you are sure that the host server will have enough  disk space
+//app.use(expressWinston.logger({
+//  transports: [
+//    new winston.transports.Console({
+//      json: true,
+//      colorize: true
+//    })
+//  ]
+//}));
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console({
+      json: true,
+      colorize: true
+    })
+// Must create a preinstall npm script to check and crate direcoty
+//    ,
+//    new (winston.transports.File)({
+//        filename: '../../var/data/error.log',
+//        level: 'warn',
+//        json: false
+//     })
+  ]
+}));
+
 app.locals = {
 	application:{
 		socketio: config.socketio
@@ -64,7 +92,7 @@ load('models')
 load('sockets')
   .into(io);
 
-// Handle the error tha happened
+// Handle the error that happened
 app.use(errors.notFound);
 app.use(errors.serverError);
 
