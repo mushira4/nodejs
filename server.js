@@ -98,5 +98,7 @@ app.use(errors.serverError);
 
 server.listen(config.serverPort, config.serverAddress, function(){
   console.log("Ntalk up and running.");
+  console.log("host:" + config.serverAddress);
+  console.log("port:" + config.serverPort );
 });
 
